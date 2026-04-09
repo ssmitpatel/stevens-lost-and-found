@@ -1,6 +1,6 @@
-# Stevens Item Connect 🎓🔍
+# Stevens Lost and Found 🎓🔍
 
-![Stevens Item Connect Logo](public/preview-1.jpeg)
+![Stevens Lost and Found Logo](public/preview-1.jpeg)
 
 > A modern, intuitive campus lost & found platform built specifically for the Stevens Institute of Technology community to effortlessly report, track, and match missing items.
 
