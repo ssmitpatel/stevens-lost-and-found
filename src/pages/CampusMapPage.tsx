@@ -18,20 +18,12 @@ import {
 } from '@/data/mock-data';
 
 type BuildingKey =
-  | 'Babbio Center'
-  | 'Edwin A. Stevens Hall'
-  | 'Burchard Building'
-  | 'McLean Hall'
-  | 'Palmer Hall'
-  | 'Morton-Peirce-Kidde Complex'
-  | 'Howe Center'
-  | 'Library'
-  | 'Student Center'
   | 'Schaefer Athletic Center'
-  | 'Gateway Academic Center'
-  | 'Campus Quad'
-  | 'Castle Point Lookout'
-  | 'River Terrace';
+  | 'McLean Hall'
+  | 'Edwin A. Stevens Hall'
+  | 'Howe Center'
+  | 'Babbio Center'
+  | 'Library';
 
 interface BuildingPin {
   key: BuildingKey;
@@ -45,18 +37,10 @@ interface BuildingPin {
 const BUILDINGS: BuildingPin[] = [
   { key: 'Schaefer Athletic Center', short: 'Schaefer', x: 55, y: 78 },
   { key: 'McLean Hall', short: 'McLean', x: 78, y: 68 },
-  { key: 'Morton-Peirce-Kidde Complex', short: 'Morton', x: 50, y: 55 },
-  { key: 'Burchard Building', short: 'Burchard', x: 58, y: 38 },
-  { key: 'Campus Quad', short: 'Quad', x: 48, y: 46 },
-  { key: 'Palmer Hall', short: 'Palmer', x: 30, y: 45 },
   { key: 'Edwin A. Stevens Hall', short: 'EAS', x: 46, y: 52 },
   { key: 'Howe Center', short: 'Howe', x: 52, y: 42 },
   { key: 'Babbio Center', short: 'Babbio', x: 72, y: 58 },
-  { key: 'River Terrace', short: 'River', x: 88, y: 50 },
   { key: 'Library', short: 'Library', x: 55, y: 57 },
-  { key: 'Student Center', short: 'Student Ctr', x: 35, y: 52 },
-  { key: 'Gateway Academic Center', short: 'Gateway', x: 28, y: 36 },
-  { key: 'Castle Point Lookout', short: 'Castle Point', x: 55, y: 22 },
 ];
 
 export default function CampusMapPage() {
