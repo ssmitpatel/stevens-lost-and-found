@@ -8,8 +8,8 @@ import { ItemCard } from '@/components/ItemCard';
 import { EmptyState } from '@/components/EmptyState';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
-import mapLight from '@/assets/map-light.svg';
-import mapDark from '@/assets/map-dark.svg';
+import mapLight from '@/assets/map/campus_map_light.png';
+import mapDark from '@/assets/map/campus_map_dark.png';
 import {
   mockItems,
   CATEGORY_LABELS,
