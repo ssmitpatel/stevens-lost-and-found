@@ -77,6 +77,7 @@ export interface ItemFilters {
   location?: string;
   reporterId?: string;
   query?: string;
+  includeClosed?: boolean;
 }
 
 export async function fetchItems(filters: ItemFilters = {}): Promise<Item[]> {
@@ -91,6 +92,11 @@ export async function fetchItems(filters: ItemFilters = {}): Promise<Item[]> {
     q = q.or(
       `title.ilike.%${filters.query}%,description.ilike.%${filters.query}%,location.ilike.%${filters.query}%`,
     );
+  }
+
+  // Hide closed items by default unless explicitly included or explicitly querying for closed status
+  if (!filters.includeClosed && filters.status !== 'closed') {
+    q = q.neq('status', 'closed');
   }
 
   const { data, error } = await q;

@@ -19,7 +19,7 @@ import type { User } from '@/lib/constants';
 export default function AdminPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { data: items = [], isLoading: itemsLoading } = useItems();
+  const { data: items = [], isLoading: itemsLoading } = useItems({ includeClosed: true });
   const { data: claims = [] } = useClaims();
   const updateStatus = useUpdateItemStatus();
 
