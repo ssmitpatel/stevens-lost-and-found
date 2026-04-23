@@ -3,9 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Search, MapPin, GitCompare, Shield, Sparkles, ArrowRight,
-  Package, Users, Clock, CheckCircle2, Mail, Bell,
+  Package, Users, Clock, CheckCircle2, Mail, Bell, Moon, Sun,
 } from 'lucide-react';
 import { mockItems, mockUsers, CAMPUS_LOCATIONS } from '@/data/mock-data';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const features = [
   {
@@ -54,6 +55,7 @@ const steps = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const stats = [
     { label: 'Items Reunited', value: mockItems.filter(i => i.status === 'returned').length + 142, icon: CheckCircle2 },
@@ -79,6 +81,15 @@ export default function LandingPage() {
             <a href="#stats" className="hover:text-foreground transition-colors">Campus</a>
           </nav>
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+            >
+              {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>Log in</Button>
             <Button size="sm" onClick={() => navigate('/signup')}>
               Sign up <ArrowRight className="h-3.5 w-3.5 ml-1" />
