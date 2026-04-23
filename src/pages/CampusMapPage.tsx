@@ -35,12 +35,12 @@ interface BuildingPin {
 // Coordinates are percentages of the campus_map_*.png aspect (2241×1587).
 // (x, y) = center of each building's rooftop as seen on the aerial illustration.
 const BUILDINGS: BuildingPin[] = [
-  { key: 'Schaefer Athletic Center', short: 'Schaefer', x: 55, y: 78 },
-  { key: 'McLean Hall', short: 'McLean', x: 78, y: 68 },
-  { key: 'Edwin A. Stevens Hall', short: 'EAS', x: 46, y: 52 },
-  { key: 'Howe Center', short: 'Howe', x: 52, y: 42 },
-  { key: 'Babbio Center', short: 'Babbio', x: 72, y: 58 },
-  { key: 'Library', short: 'Library', x: 55, y: 57 },
+  { key: 'Schaefer Athletic Center', short: 'Schaefer', x: 47, y: 78 },
+  { key: 'McLean Hall', short: 'McLean', x: 92, y: 78 },
+  { key: 'Edwin A. Stevens Hall', short: 'EAS', x: 85, y: 92 },
+  { key: 'Howe Center', short: 'Howe', x: 46, y: 30 },
+  { key: 'Babbio Center', short: 'Babbio', x: 86, y: 72 },
+  { key: 'Library', short: 'Library', x: 37, y: 58 },
 ];
 
 export default function CampusMapPage() {
