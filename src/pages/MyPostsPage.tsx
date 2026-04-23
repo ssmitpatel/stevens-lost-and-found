@@ -12,7 +12,7 @@ export default function MyPostsPage() {
   const { data: myItems = [], isLoading } = useItems({ reporterId: user?.id });
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-xl font-semibold mb-1">My Posts</h1>
       <p className="text-sm text-muted-foreground mb-4">{myItems.length} items you've reported</p>
 

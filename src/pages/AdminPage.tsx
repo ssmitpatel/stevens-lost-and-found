@@ -93,7 +93,7 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="p-6 max-w-6xl">
+    <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-xl font-semibold mb-1">Moderation Dashboard</h1>
       <p className="text-sm text-muted-foreground mb-4">Review and manage reported items</p>
 

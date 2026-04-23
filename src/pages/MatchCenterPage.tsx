@@ -37,7 +37,7 @@ export default function MatchCenterPage() {
   }
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-xl font-semibold mb-1">Match Center</h1>
       <p className="text-sm text-muted-foreground mb-4">
         {matches.length} potential {matches.length === 1 ? 'match' : 'matches'}

@@ -127,7 +127,7 @@ export default function ItemDetailPage() {
   };
 
   return (
-    <div className="p-6 max-w-3xl">
+    <div className="p-6 max-w-3xl mx-auto">
       <Button variant="ghost" size="sm" className="mb-4 -ml-2" onClick={() => navigate(-1)}>
         <ArrowLeft className="h-3.5 w-3.5 mr-1" />Back
       </Button>

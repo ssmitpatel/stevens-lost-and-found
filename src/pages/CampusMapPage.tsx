@@ -76,7 +76,7 @@ export default function CampusMapPage() {
   const totalFound = filteredItems.filter(i => i.type === 'found').length;
 
   return (
-    <div className="p-6 max-w-6xl space-y-5">
+    <div className="p-6 max-w-6xl mx-auto space-y-5">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-xl font-semibold flex items-center gap-2">
@@ -192,13 +192,13 @@ export default function CampusMapPage() {
                   {/* Pin */}
                   <span
                     className={cn(
-                      'relative flex items-center justify-center h-7 w-7 rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.45)] ring-[3px] ring-white transition-transform',
+                      'relative flex items-center justify-center h-7 w-7 rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.45)] ring-[3px] ring-background transition-transform',
                       'group-hover:scale-110 group-focus:scale-110',
                       isActive
                         ? 'bg-primary text-primary-foreground scale-110'
                         : total > 0
                           ? 'bg-primary text-primary-foreground'
-                          : 'bg-white text-foreground',
+                          : 'bg-background text-foreground',
                     )}
                   >
                     <MapPin className="h-3.5 w-3.5" fill="currentColor" />

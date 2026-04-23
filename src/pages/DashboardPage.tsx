@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/button';
 import { ItemCard } from '@/components/ItemCard';
 import { ItemCardSkeleton } from '@/components/ItemCardSkeleton';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useItems } from '@/hooks/use-items';
 import { useMatches } from '@/hooks/use-matches';
 import { CATEGORY_LABELS } from '@/lib/constants';
 import type { ItemCategory } from '@/lib/constants';
+import mapLight from '@/assets/map/campus_map_light.png';
+import mapDark from '@/assets/map/campus_map_dark.png';
 import {
   Search, MapPin, TrendingUp, Clock, Plus, Sparkles,
   ArrowRight, Package, CheckCircle2,
@@ -16,6 +19,7 @@ import {
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { theme } = useTheme();
   const { data: items = [], isLoading: itemsLoading } = useItems();
   const { data: matches = [], isLoading: matchesLoading } = useMatches();
 
@@ -165,12 +169,20 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="mt-4 border-primary/20 bg-gradient-to-br from-primary/5 to-info/5 hover:shadow-md transition-shadow cursor-pointer"
+          <Card className="mt-4 border-primary/20 hover:shadow-md transition-shadow cursor-pointer overflow-hidden group relative min-h-[200px] flex items-end"
             onClick={() => navigate('/app/map')}
           >
-            <CardContent className="p-4 text-center">
+            <div className="absolute inset-0 z-0">
+               <img 
+                 src={theme === 'dark' ? mapDark : mapLight} 
+                 alt="Campus Map Preview" 
+                 className="w-full h-full object-cover object-center opacity-70 dark:opacity-60 scale-[1.2] -translate-y-4 group-hover:scale-[1.25] transition-transform duration-500" 
+               />
+               <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/30 to-transparent" />
+            </div>
+            <CardContent className="p-4 text-center relative z-10 w-full pt-8">
               <MapPin className="h-5 w-5 mx-auto text-primary mb-2" />
-              <p className="text-xs font-medium mb-1">Open Campus Map</p>
+              <p className="text-xs font-semibold mb-1">Open Campus Map</p>
               <p className="text-[11px] text-muted-foreground">
                 See exactly where items were lost or found.
               </p>

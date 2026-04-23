@@ -93,7 +93,7 @@ export default function PostItemPage() {
   };
 
   return (
-    <div className="p-6 max-w-2xl">
+    <div className="p-6 max-w-2xl mx-auto">
       <Button variant="ghost" size="sm" className="mb-4 -ml-2" onClick={() => navigate(-1)}>
         <ArrowLeft className="h-3.5 w-3.5 mr-1" />Back
       </Button>
