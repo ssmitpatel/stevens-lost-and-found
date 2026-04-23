@@ -40,21 +40,23 @@ interface BuildingPin {
   y: number;
 }
 
+// Coordinates are percentages of the campus_map_*.png aspect (2241×1587).
+// (x, y) = center of each building's rooftop as seen on the aerial illustration.
 const BUILDINGS: BuildingPin[] = [
-  { key: 'Babbio Center', short: 'Babbio', x: 78, y: 32 },
-  { key: 'Howe Center', short: 'Howe', x: 70, y: 52 },
-  { key: 'Burchard Building', short: 'Burchard', x: 55, y: 38 },
-  { key: 'Edwin A. Stevens Hall', short: 'EAS', x: 45, y: 55 },
-  { key: 'McLean Hall', short: 'McLean', x: 38, y: 30 },
-  { key: 'Palmer Hall', short: 'Palmer', x: 28, y: 48 },
-  { key: 'Morton-Peirce-Kidde Complex', short: 'Morton', x: 62, y: 22 },
-  { key: 'Library', short: 'Library', x: 50, y: 70 },
-  { key: 'Student Center', short: 'Student Ctr', x: 35, y: 75 },
-  { key: 'Gateway Academic Center', short: 'Gateway', x: 82, y: 70 },
-  { key: 'Schaefer Athletic Center', short: 'Schaefer', x: 18, y: 20 },
-  { key: 'Campus Quad', short: 'Quad', x: 50, y: 45 },
-  { key: 'Castle Point Lookout', short: 'Castle Point', x: 88, y: 88 },
-  { key: 'River Terrace', short: 'River', x: 92, y: 55 },
+  { key: 'Schaefer Athletic Center', short: 'Schaefer', x: 18, y: 36 },
+  { key: 'McLean Hall', short: 'McLean', x: 32, y: 32 },
+  { key: 'Morton-Peirce-Kidde Complex', short: 'Morton', x: 40, y: 30 },
+  { key: 'Burchard Building', short: 'Burchard', x: 48, y: 32 },
+  { key: 'Campus Quad', short: 'Quad', x: 42, y: 40 },
+  { key: 'Palmer Hall', short: 'Palmer', x: 22, y: 46 },
+  { key: 'Edwin A. Stevens Hall', short: 'EAS', x: 36, y: 48 },
+  { key: 'Howe Center', short: 'Howe', x: 52, y: 46 },
+  { key: 'Babbio Center', short: 'Babbio', x: 64, y: 50 },
+  { key: 'River Terrace', short: 'River', x: 80, y: 40 },
+  { key: 'Library', short: 'Library', x: 44, y: 58 },
+  { key: 'Student Center', short: 'Student Ctr', x: 28, y: 64 },
+  { key: 'Gateway Academic Center', short: 'Gateway', x: 74, y: 72 },
+  { key: 'Castle Point Lookout', short: 'Castle Point', x: 82, y: 82 },
 ];
 
 export default function CampusMapPage() {
@@ -158,7 +160,7 @@ export default function CampusMapPage() {
         <CardContent className="p-0">
           <div
             className="relative w-full"
-            style={{ aspectRatio: '16 / 10' }}
+            style={{ aspectRatio: '2241 / 1587' }}
             aria-label="Stevens campus map"
           >
             {/* Theme-aware map backdrop */}
@@ -166,7 +168,7 @@ export default function CampusMapPage() {
               src={theme === 'dark' ? mapDark : mapLight}
               alt=""
               aria-hidden
-              className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+              className="absolute inset-0 w-full h-full object-cover object-bottom select-none pointer-events-none"
               draggable={false}
             />
 
@@ -207,13 +209,13 @@ export default function CampusMapPage() {
                   {/* Pin */}
                   <span
                     className={cn(
-                      'relative flex items-center justify-center h-7 w-7 rounded-full shadow-md ring-2 ring-background transition-transform',
+                      'relative flex items-center justify-center h-7 w-7 rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.45)] ring-[3px] ring-white transition-transform',
                       'group-hover:scale-110 group-focus:scale-110',
                       isActive
                         ? 'bg-primary text-primary-foreground scale-110'
                         : total > 0
-                          ? 'bg-foreground text-background'
-                          : 'bg-muted-foreground/60 text-background',
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-white text-foreground',
                     )}
                   >
                     <MapPin className="h-3.5 w-3.5" fill="currentColor" />
