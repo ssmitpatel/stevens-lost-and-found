@@ -14,6 +14,7 @@ import ItemFeedPage from "@/pages/ItemFeedPage";
 import PostItemPage from "@/pages/PostItemPage";
 import ItemDetailPage from "@/pages/ItemDetailPage";
 import MatchCenterPage from "@/pages/MatchCenterPage";
+import MessagesPage from "@/pages/MessagesPage";
 import MyPostsPage from "@/pages/MyPostsPage";
 import CampusMapPage from "@/pages/CampusMapPage";
 import AdminPage from "@/pages/AdminPage";
@@ -84,6 +85,7 @@ const App = () => (
                   <Route path="item/:id" element={<ItemDetailPage />} />
                   <Route path="map" element={<CampusMapPage />} />
                   <Route path="matches" element={<MatchCenterPage />} />
+                  <Route path="messages" element={<MessagesPage />} />
                   <Route path="my-posts" element={<MyPostsPage />} />
                   <Route path="admin" element={<AdminPage />} />
                 </Route>

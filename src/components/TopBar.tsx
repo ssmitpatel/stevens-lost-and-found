@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Bell, Moon, Sun, LogOut, ChevronDown, Search, Plus, X, Package, MapPin } from 'lucide-react';
+import { Bell, Moon, Sun, LogOut, ChevronDown, Search, Plus, X, Package, MapPin, MessageSquare } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useNotifications } from '@/hooks/use-notifications';
+import { useUnreadChatCount } from '@/hooks/use-chat';
 import { useItems } from '@/hooks/use-items';
 import { CATEGORY_LABELS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
@@ -23,6 +24,7 @@ export function TopBar() {
   const location = useLocation();
   const { data: notifications = [] } = useNotifications();
   const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadChats = useUnreadChatCount();
 
   const { data: allItems = [] } = useItems();
 
@@ -166,6 +168,21 @@ export function TopBar() {
           onClick={() => navigate('/app/post?type=lost')}
         >
           <Plus className="h-3.5 w-3.5" />Report
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 relative"
+          aria-label="Messages"
+          onClick={() => navigate('/app/messages')}
+        >
+          <MessageSquare className="h-4 w-4" />
+          {unreadChats > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 h-4 min-w-[16px] px-1 inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[9px] font-semibold ring-2 ring-card">
+              {unreadChats > 9 ? '9+' : unreadChats}
+            </span>
+          )}
         </Button>
 
         <Button variant="ghost" size="icon" className="h-8 w-8 relative" aria-label="Notifications">

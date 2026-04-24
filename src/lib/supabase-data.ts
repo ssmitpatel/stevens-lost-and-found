@@ -2,6 +2,7 @@ import { supabase, ITEM_PHOTOS_BUCKET } from '@/lib/supabase';
 import type {
   Item, ItemType, ItemStatus, ItemCategory,
   Match, Claim, Notification, User,
+  Conversation, ChatMessage, ConversationWithMeta,
 } from '@/lib/constants';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -275,4 +276,166 @@ export async function fetchProfiles(): Promise<User[]> {
   const { data, error } = await supabase.from('profiles').select('*');
   if (error) throw error;
   return (data ?? []).map(toProfile);
+}
+
+// ─── Chat ─────────────────────────────────────────────────────────────────────
+
+function toConversation(row: Record<string, unknown>): Conversation {
+  return {
+    id: row.id as string,
+    userA: row.user_a as string,
+    userB: row.user_b as string,
+    lastMessageAt: row.last_message_at as string,
+    lastReadA: row.last_read_a as string,
+    lastReadB: row.last_read_b as string,
+    createdAt: row.created_at as string,
+  };
+}
+
+function toMessage(row: Record<string, unknown>): ChatMessage {
+  return {
+    id: row.id as string,
+    conversationId: row.conversation_id as string,
+    senderId: row.sender_id as string,
+    body: row.body as string,
+    itemId: (row.item_id as string) ?? undefined,
+    createdAt: row.created_at as string,
+  };
+}
+
+/** Sort two user ids so we can store/lookup the unique pair deterministically. */
+function orderedPair(a: string, b: string): [string, string] {
+  return a < b ? [a, b] : [b, a];
+}
+
+/**
+ * Find the existing 1-on-1 conversation for these two users, or create one.
+ * Always returns the conversation row.
+ */
+export async function getOrCreateConversation(
+  meId: string,
+  otherId: string,
+): Promise<Conversation> {
+  if (meId === otherId) {
+    throw new Error('Cannot start a conversation with yourself.');
+  }
+  const [userA, userB] = orderedPair(meId, otherId);
+
+  const existing = await supabase
+    .from('conversations')
+    .select('*')
+    .eq('user_a', userA)
+    .eq('user_b', userB)
+    .maybeSingle();
+
+  if (existing.error) throw existing.error;
+  if (existing.data) return toConversation(existing.data);
+
+  const { data, error } = await supabase
+    .from('conversations')
+    .insert({ user_a: userA, user_b: userB })
+    .select()
+    .single();
+  if (error) throw error;
+  return toConversation(data);
+}
+
+/**
+ * Fetch all conversations where the current user is a participant, with
+ * preview/unread metadata joined in.
+ */
+export async function fetchConversations(meId: string): Promise<ConversationWithMeta[]> {
+  const { data, error } = await supabase
+    .from('conversations')
+    .select('*')
+    .or(`user_a.eq.${meId},user_b.eq.${meId}`)
+    .order('last_message_at', { ascending: false });
+
+  if (error) throw error;
+  const convos = (data ?? []).map(toConversation);
+
+  if (convos.length === 0) return [];
+
+  // Fetch the latest message per conversation in one round trip.
+  const ids = convos.map(c => c.id);
+  const { data: msgRows, error: msgErr } = await supabase
+    .from('messages')
+    .select('*')
+    .in('conversation_id', ids)
+    .order('created_at', { ascending: false });
+  if (msgErr) throw msgErr;
+
+  const latest = new Map<string, ChatMessage>();
+  for (const row of msgRows ?? []) {
+    const m = toMessage(row);
+    if (!latest.has(m.conversationId)) latest.set(m.conversationId, m);
+  }
+
+  return convos.map(c => {
+    const otherUserId = c.userA === meId ? c.userB : c.userA;
+    const myLastRead = c.userA === meId ? c.lastReadA : c.lastReadB;
+    const last = latest.get(c.id);
+    const unread = !!last && last.senderId !== meId && last.createdAt > myLastRead;
+    return {
+      ...c,
+      otherUserId,
+      unread,
+      preview: last?.body,
+      previewSenderId: last?.senderId,
+    };
+  });
+}
+
+export async function fetchMessages(conversationId: string): Promise<ChatMessage[]> {
+  const { data, error } = await supabase
+    .from('messages')
+    .select('*')
+    .eq('conversation_id', conversationId)
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(toMessage);
+}
+
+export async function sendMessage(input: {
+  conversationId: string;
+  senderId: string;
+  body: string;
+  itemId?: string;
+}): Promise<ChatMessage> {
+  const { data, error } = await supabase
+    .from('messages')
+    .insert({
+      conversation_id: input.conversationId,
+      sender_id: input.senderId,
+      body: input.body,
+      item_id: input.itemId ?? null,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return toMessage(data);
+}
+
+/**
+ * Mark a conversation as read for the current user (advances their
+ * `last_read_*` watermark to now).
+ */
+export async function markConversationRead(
+  conversationId: string,
+  meId: string,
+): Promise<void> {
+  // We need to know which slot we are (a or b) to update the right column.
+  const { data, error } = await supabase
+    .from('conversations')
+    .select('user_a, user_b')
+    .eq('id', conversationId)
+    .single();
+  if (error) throw error;
+
+  const column = data.user_a === meId ? 'last_read_a' : 'last_read_b';
+  const { error: updErr } = await supabase
+    .from('conversations')
+    .update({ [column]: new Date().toISOString() })
+    .eq('id', conversationId);
+  if (updErr) throw updErr;
 }

@@ -81,3 +81,29 @@ export const STATUS_LABELS: Record<ItemStatus, string> = {
 };
 
 export const STEVENS_EMAIL_DOMAIN = '@stevens.edu';
+
+export interface Conversation {
+  id: string;
+  userA: string;
+  userB: string;
+  lastMessageAt: string;
+  lastReadA: string;
+  lastReadB: string;
+  createdAt: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  body: string;
+  itemId?: string;
+  createdAt: string;
+}
+
+export interface ConversationWithMeta extends Conversation {
+  otherUserId: string;
+  unread: boolean;
+  preview?: string;
+  previewSenderId?: string;
+}

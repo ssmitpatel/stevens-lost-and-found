@@ -296,6 +296,96 @@ create policy "notifications_mod_insert" on public.notifications
   for insert with check (public.is_moderator() or auth.uid() = user_id);
 
 -- ============================================================================
+-- 7b. Chat: conversations + messages
+-- ============================================================================
+-- A conversation is a 1-on-1 thread between two users. We store the pair
+-- ordered (user_a < user_b) so a unique index enforces "one thread per pair".
+create table if not exists public.conversations (
+  id uuid primary key default gen_random_uuid(),
+  user_a uuid not null references public.profiles(id) on delete cascade,
+  user_b uuid not null references public.profiles(id) on delete cascade,
+  last_message_at timestamptz not null default now(),
+  last_read_a timestamptz not null default now(),
+  last_read_b timestamptz not null default now(),
+  created_at timestamptz not null default now(),
+  constraint conversations_pair_ordered check (user_a < user_b),
+  constraint conversations_pair_unique unique (user_a, user_b)
+);
+
+create index if not exists conversations_user_a_idx on public.conversations(user_a, last_message_at desc);
+create index if not exists conversations_user_b_idx on public.conversations(user_b, last_message_at desc);
+
+-- Individual chat messages. item_id is optional and used to "tag" a message
+-- with the item being discussed (rendered as a clickable card in the bubble).
+create table if not exists public.messages (
+  id uuid primary key default gen_random_uuid(),
+  conversation_id uuid not null references public.conversations(id) on delete cascade,
+  sender_id uuid not null references public.profiles(id) on delete cascade,
+  body text not null,
+  item_id uuid references public.items(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists messages_conversation_idx on public.messages(conversation_id, created_at);
+
+-- Bump last_message_at on the parent conversation whenever a message is inserted.
+create or replace function public.handle_new_message()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.conversations
+     set last_message_at = new.created_at
+   where id = new.conversation_id;
+  return new;
+end $$;
+
+drop trigger if exists on_message_created on public.messages;
+create trigger on_message_created
+  after insert on public.messages
+  for each row execute function public.handle_new_message();
+
+alter table public.conversations enable row level security;
+alter table public.messages      enable row level security;
+
+drop policy if exists "conversations_read_participant"   on public.conversations;
+drop policy if exists "conversations_insert_participant" on public.conversations;
+drop policy if exists "conversations_update_participant" on public.conversations;
+
+create policy "conversations_read_participant" on public.conversations
+  for select using (auth.uid() = user_a or auth.uid() = user_b);
+
+create policy "conversations_insert_participant" on public.conversations
+  for insert with check (auth.uid() = user_a or auth.uid() = user_b);
+
+create policy "conversations_update_participant" on public.conversations
+  for update using (auth.uid() = user_a or auth.uid() = user_b);
+
+drop policy if exists "messages_read_participant"   on public.messages;
+drop policy if exists "messages_insert_participant" on public.messages;
+
+create policy "messages_read_participant" on public.messages
+  for select using (
+    exists (
+      select 1 from public.conversations c
+      where c.id = conversation_id
+        and (auth.uid() = c.user_a or auth.uid() = c.user_b)
+    )
+  );
+
+create policy "messages_insert_participant" on public.messages
+  for insert with check (
+    auth.uid() = sender_id
+    and exists (
+      select 1 from public.conversations c
+      where c.id = conversation_id
+        and (auth.uid() = c.user_a or auth.uid() = c.user_b)
+    )
+  );
+
+-- ============================================================================
 -- 8. Storage bucket for item photos
 -- ============================================================================
 insert into storage.buckets (id, name, public)
